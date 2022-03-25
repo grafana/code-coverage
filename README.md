@@ -1,4 +1,4 @@
-# Code coverage report for Go and Typescript
+# Code coverage report for Go and TypeScript
 
 ## Prerequisites
 #### TypeScript

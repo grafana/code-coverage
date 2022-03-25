@@ -1,5 +1,6 @@
 # Code coverage report for Go and Typescript
 
 ## Prerequisites
-
-* `yarn test:coverage`
+#### TypeScript
+* yarn
+* package.json must contain a script `yarn test:coverage` which generates a report in `"jest --coverage"` style

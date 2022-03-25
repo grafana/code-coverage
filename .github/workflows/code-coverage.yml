@@ -52,7 +52,7 @@ jobs:
           body: |
             Code coverage report for PR #${{ github.event.pull_request.number }}
 
-            |      |          Go                         | Typescript |
+            |      |          Go                         | TypeScript |
             |------| ----------------------------------- | ---------------- |
             | main | ${{ env.go-main-cov }}%             | ${{ env.ts-main-cov }}% |
             | PR   | ${{ env.go-pr-cov }}%               | ${{ env.ts-pr-cov }}%   |

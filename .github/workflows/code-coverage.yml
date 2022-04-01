@@ -15,7 +15,7 @@ jobs:
         run: yarn install
       - uses: actions/setup-go@v2
         with:
-          go-version: '1.16.1'
+          go-version: '1.17.8'
 
       - name: Get coverage for caller's PR
         run: |

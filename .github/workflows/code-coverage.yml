@@ -17,10 +17,12 @@ jobs:
         with:
           go-version: '1.17.8'
 
-      - name: Get coverage for caller's PR
+      - name: Get go coverage for caller's PR
         run: |
           go test -v -coverpkg=./... -coverprofile=profile.cov ./...
           echo "go-pr-cov=$(go tool cover -func profile.cov | grep total: | awk '{print substr($NF,1,length($NF)-1)}')" >> $GITHUB_ENV
+      - name: Get TypeScript coverage for caller's PR
+        run: |
           echo "ts-pr-cov=$(yarn test:coverage | grep 'All files' | awk '{print $10}')" >> $GITHUB_ENV
 
       - uses: actions/checkout@v3
@@ -29,10 +31,13 @@ jobs:
       - name: yarn install for caller's main
         run: yarn install
 
-      - name: Get coverage on caller's main
+      - name: Get go coverage on caller's main
         run: |
           go test -v -coverpkg=./... -coverprofile=profile.cov ./...
           echo "go-main-cov=$(go tool cover -func profile.cov | grep total: | awk '{print substr($NF,1,length($NF)-1)}')" >> $GITHUB_ENV
+
+      - name: Get TypeScript coverage on caller's main
+        run: |
           echo "ts-main-cov=$(yarn test:coverage | grep 'All files' | awk '{print $10}')" >> $GITHUB_ENV
 
       - name: Calculate coverage difference

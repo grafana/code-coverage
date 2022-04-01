@@ -6,10 +6,9 @@
 * package.json must contain a script `yarn test:coverage` which generates a report in `"jest --coverage"` style
 * runs in node 17.x environment
 
-#### Go
-* runs in go 1.16.1 environment
-
 ## Description
+
+**Code coverage comment not posted on PRs from forks.**
 
 This workflow does the following for caller pull requests:
 

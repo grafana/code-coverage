@@ -3,6 +3,8 @@ on: workflow_call
 jobs:
   comment-coverage-difference:
     runs-on: ubuntu-latest
+    # Check if the event is not triggered by a fork TODO: find a way to manually trigger workflow for forks
+    if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v2

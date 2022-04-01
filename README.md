@@ -8,7 +8,7 @@
 
 ## Description
 
-**Code coverage comment not posted on PRs from forks.**
+**Code coverage comment not posted on PRs from forks.** That information can still be gleaned from the output of the previous step in the run.
 
 This workflow does the following for caller pull requests:
 

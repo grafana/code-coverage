@@ -14,6 +14,9 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '1.17.8'
+      - name: generate go for github.com/grafana/grafana
+        if: github.repository == 'grafana/grafana'
+        run: make gen-go
 
       - name: Get go coverage for caller's PR
         run: |
@@ -28,6 +31,9 @@ jobs:
           ref: main
       - name: yarn install for caller's main
         run: yarn install
+      - name: generate go for github.com/grafana/grafana
+        if: github.repository == 'grafana/grafana'
+        run: make gen-go
 
       - name: Get go coverage on caller's main
         run: |

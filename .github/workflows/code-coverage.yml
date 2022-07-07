@@ -1,5 +1,14 @@
 name: Code Coverage
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      frontend-path-regexp:
+        required: true
+        type: string
+      backend-path-regexp:
+        required: true
+        type: string
+
 jobs:
   comment-coverage-difference:
     runs-on: ubuntu-latest
@@ -13,8 +22,8 @@ jobs:
       - name: Get paths
         id: relevant-paths
         run: |
-          echo "::set-output name=frontend-paths::$(echo ${{ steps.changed.outputs.all }} | grep -Eo 'public\/app\/plugins\/datasource\/(grafana-azure-monitor-datasource|cloud-monitoring|cloudwatch)' | sort -u )"
-          echo "::set-output name=backend-paths::$(echo ${{ steps.changed.outputs.all }} | grep -Eo 'pkg\/tsdb\/(azuremonitor|cloudmonitoring|cloudwatch)' | sort -u )"
+          echo "::set-output name=frontend-paths::$(echo ${{ steps.changed.outputs.all }} | grep -Eo '${{ inputs.frontend-path-regexp }}' | sort -u )"
+          echo "::set-output name=backend-paths::$(echo ${{ steps.changed.outputs.all }} | grep -Eo '${{ inputs.backend-path-regexp }}' | sort -u )"
 
       - uses: actions/setup-node@v2
         with:

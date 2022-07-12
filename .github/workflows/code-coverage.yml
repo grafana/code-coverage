@@ -191,6 +191,7 @@ jobs:
           path: coverage/lcov-report
 
       - name: Create comments
+        id: comments
         run: |
           IFS="+"
           PR_NUMBER=${{ github.event.pull_request.number }}
@@ -222,11 +223,13 @@ jobs:
 
           echo "Creating frontend comment"
           generate_comment frontend
-          echo "frontend-cov-comment=$(echo -e "Frontend $COMMENT")" >> $GITHUB_ENV
+          echo "::set-output name=frontend-comment::$(echo -e "Frontend $COMMENT")"
+
+          COMMENT="code coverage report for PR #$PR_NUMBER\n| Plugin |          Main                       |   PR   | Difference |\n| ------ | ----------------------------------- | ------ | ---------- |\n"
 
           echo "Creating backend comment"
           generate_comment backend
-          echo "backend-cov-comment=$(echo -e "Backend $COMMENT")" >> $GITHUB_ENV
+          echo "::set-output name=backend-comment::$(echo -e "Backend $COMMENT")"
 
       - name: Find previous backend comment, if any
         uses: peter-evans/find-comment@v2
@@ -253,7 +256,7 @@ jobs:
           comment-id: ${{ steps.find-backend-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            ${{ env.backend-cov-comment }}
+            ${{ steps.comments.outputs.backend-comment }}
           edit-mode: replace
       - name: Create or update frontend comment
         uses: peter-evans/create-or-update-comment@v2
@@ -263,5 +266,5 @@ jobs:
           comment-id: ${{ steps.find-frontend-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            ${{ env.frontend-cov-comment }}
+            ${{ steps.comments.outputs.frontend-comment }}
           edit-mode: replace

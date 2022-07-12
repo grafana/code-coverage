@@ -221,17 +221,20 @@ jobs:
             done
             COMMENT="${COMMENT//'%'/'%25'}"
             COMMENT="${COMMENT//$'\n'/'%0A'}"
+            COMMENT="${COMMENT//$'\r'/'%0D'}"
           }
 
           echo "Creating frontend comment"
           generate_comment frontend
-          echo "::set-output name=frontend-comment::$(echo "Frontend $COMMENT")"
+          COMMENT="Frontend $COMMENT"
+          echo "::set-output name=frontend-comment::$COMMENT"
 
           COMMENT="code coverage report for PR #$PR_NUMBER\n| Plugin |          Main                       |   PR   | Difference |\n| ------ | ----------------------------------- | ------ | ---------- |\n"
 
           echo "Creating backend comment"
           generate_comment backend
-          echo "::set-output name=backend-comment::$(echo "Backend $COMMENT")"
+          COMMENT="Backend $COMMENT"
+          echo "::set-output name=backend-comment::$COMMENT"
 
       - name: Find previous backend comment, if any
         uses: peter-evans/find-comment@v2
@@ -257,8 +260,7 @@ jobs:
         with:
           comment-id: ${{ steps.find-backend-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ${{ steps.comments.outputs.backend-comment }}
+          body: ${{ steps.comments.outputs.backend-comment }}
           edit-mode: replace
       - name: Create or update frontend comment
         uses: peter-evans/create-or-update-comment@v2
@@ -267,6 +269,5 @@ jobs:
         with:
           comment-id: ${{ steps.find-frontend-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ${{ steps.comments.outputs.frontend-comment }}
+          body: ${{ steps.comments.outputs.frontend-comment }}
           edit-mode: replace

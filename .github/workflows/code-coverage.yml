@@ -219,17 +219,19 @@ jobs:
                 MAIN_COV=$(echo $CURR_MAIN_LINE | cut -d '|' -f 2 | xargs)
                 COMMENT="$COMMENT|  $PLUGIN |   $MAIN_COV%  |   $PR_COV%    |   $(bc <<<"$PR_COV - $MAIN_COV")% |\n"
             done
+            COMMENT="${COMMENT//'%'/'%25'}"
+            COMMENT="${COMMENT//$'\n'/'%0A'}"
           }
 
           echo "Creating frontend comment"
           generate_comment frontend
-          echo "::set-output name=frontend-comment::$(echo -e "Frontend $COMMENT")"
+          echo "::set-output name=frontend-comment::$(echo "Frontend $COMMENT")"
 
           COMMENT="code coverage report for PR #$PR_NUMBER\n| Plugin |          Main                       |   PR   | Difference |\n| ------ | ----------------------------------- | ------ | ---------- |\n"
 
           echo "Creating backend comment"
           generate_comment backend
-          echo "::set-output name=backend-comment::$(echo -e "Backend $COMMENT")"
+          echo "::set-output name=backend-comment::$(echo "Backend $COMMENT")"
 
       - name: Find previous backend comment, if any
         uses: peter-evans/find-comment@v2

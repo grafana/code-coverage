@@ -202,8 +202,14 @@ jobs:
           COMMENT="code coverage report for PR #$PR_NUMBER\n| Plugin |          Main                       |   PR   | Difference |\n| ------ | ----------------------------------- | ------ | ---------- |\n"
 
           generate_comment() {
-            PR_ARRAY=$1
-            MAIN_ARRAY=$2
+            if [ "$1" == "frontend" ]; then
+                PR_ARRAY=(${PR_FRONTEND_COVERAGE[@]})
+                MAIN_ARRAY=(${MAIN_FRONTEND_COVERAGE[@]})
+            else
+                PR_ARRAY=(${PR_BACKEND_COVERAGE[@]})
+                MAIN_ARRAY=(${MAIN_BACKEND_COVERAGE[@]})
+            fi
+
             for i in "${!PR_ARRAY[@]}"; do
                 CURR_PR_LINE=${PR_ARRAY[i]}
                 CURR_MAIN_LINE=${MAIN_ARRAY[i]}
@@ -215,12 +221,11 @@ jobs:
           }
 
           echo "Creating frontend comment"
-          generate_comment $PR_FRONTEND_COVERAGE $MAIN_FRONTEND_COVERAGE
+          generate_comment frontend
           echo "frontend-cov-comment=$(echo -e "Frontend $COMMENT")" >> $GITHUB_ENV
 
           echo "Creating backend comment"
-          generate_comment $PR_BACKEND_COVERAGE $MAIN_BACKEND_COVERAGE
-          echo -e "Backend $COMMENT"
+          generate_comment backend
           echo "backend-cov-comment=$(echo -e "Backend $COMMENT")" >> $GITHUB_ENV
 
       - name: Find previous backend comment, if any

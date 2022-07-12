@@ -20,7 +20,7 @@ jobs:
       - name: Changed files
         id: changed
         run: |
-          echo "::set-output name=all::$(git diff --name-only ${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.ref }} | xargs)"
+          echo "::set-output name=all::$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...origin/${{ github.event.pull_request.head.ref }} | xargs)"
       - name: Get paths
         id: relevant-paths
         run: |

@@ -3,9 +3,11 @@ on:
   workflow_call:
     inputs:
       frontend-path-regexp:
+        description: Regexp to match valid frontend paths
         required: true
         type: string
       backend-path-regexp:
+        description: Regexp to match valid backend paths
         required: true
         type: string
 
@@ -170,10 +172,10 @@ jobs:
         run: |
           IFS="+"
           PR_NUMBER=${{ github.event.pull_request.number }}
-          PR_FRONTEND_COVERAGE=(${{steps.pr-frontend.outputs.coverage})
-          PR_BACKEND_COVERAGE=(${{steps.pr-backend.outputs.coverage}})
-          MAIN_FRONTEND_COVERAGE=(${{steps.main-frontend.outputs.coverage}})
-          MAIN_BACKEND_COVERAGE=(${{steps.main-backend.outputs.coverage}})
+          PR_FRONTEND_COVERAGE=(${{ steps.pr-frontend.outputs.coverage }})
+          PR_BACKEND_COVERAGE=(${{ steps.pr-backend.outputs.coverage }})
+          MAIN_FRONTEND_COVERAGE=(${{ steps.main-frontend.outputs.coverage }})
+          MAIN_BACKEND_COVERAGE=(${{ steps.main-backend.outputs.coverage }})
 
           COMMENT="code coverage report for PR #$PR_NUMBER\n| Plugin |          Main                       |   PR   | Difference |\n| ------ | ----------------------------------- | ------ | ---------- |\n"
 

@@ -216,10 +216,12 @@ jobs:
           MAIN_FRONTEND_COVERAGE=("${{ steps.main-frontend.outputs.coverage }}")
           MAIN_BACKEND_COVERAGE=("${{ steps.main-backend.outputs.coverage }}")
 
-          COMMENT="code coverage report for PR #$PR_NUMBER
-          | Plugin |          Main                       |   PR   | Difference |
+          BASE_COMMENT="code coverage report for PR #$PR_NUMBER
+          "
+          TABLE="| Plugin |          Main                       |   PR   | Difference |
           | ------ | ----------------------------------- | ------ | ---------- |
           "
+          COMMENT=""
 
           generate_comment() {
             if [ "$1" == "frontend" ]; then
@@ -230,18 +232,20 @@ jobs:
                 MAIN_ARRAY=(${MAIN_BACKEND_COVERAGE[@]})
             fi
 
-            for i in "${!PR_ARRAY[@]}"; do
-                CURR_PR_LINE=${PR_ARRAY[i]}
-                CURR_MAIN_LINE=${MAIN_ARRAY[i]}
-                PLUGIN=$(echo $CURR_PR_LINE | cut -d '|' -f 1 | xargs)
-                PR_COV=$(echo $CURR_PR_LINE | cut -d '|' -f 2 | xargs)
-                MAIN_COV=$(echo $CURR_MAIN_LINE | cut -d '|' -f 2 | xargs)
-                COMMENT="$COMMENT|  $PLUGIN |   $MAIN_COV%  |   $PR_COV%    |   $(bc <<<"$PR_COV - $MAIN_COV")% |
-                "
-            done
 
             if [ ${#PR_ARRAY[@]} -eq 0 ]; then
-              COMMENT=" - no changes"
+              COMMENT="$BASE_COMMENT No changes"
+            else
+              COMMENT="$BASE_COMMENT$TABLE"
+              for i in "${!PR_ARRAY[@]}"; do
+                  CURR_PR_LINE=${PR_ARRAY[i]}
+                  CURR_MAIN_LINE=${MAIN_ARRAY[i]}
+                  PLUGIN=$(echo $CURR_PR_LINE | cut -d '|' -f 1 | xargs)
+                  PR_COV=$(echo $CURR_PR_LINE | cut -d '|' -f 2 | xargs)
+                  MAIN_COV=$(echo $CURR_MAIN_LINE | cut -d '|' -f 2 | xargs)
+                  COMMENT="$COMMENT|  $PLUGIN |   $MAIN_COV%  |   $PR_COV%    |   $(bc <<<"$PR_COV - $MAIN_COV")% |
+                  "
+              done
             fi
 
             COMMENT="${COMMENT//'%'/'%25'}"
@@ -254,10 +258,6 @@ jobs:
           COMMENT="Frontend $COMMENT"
           echo $COMMENT
           echo "::set-output name=frontend-comment::$COMMENT"
-
-          COMMENT="code coverage report for PR #$PR_NUMBER
-          | Plugin |          Main                       |   PR   | Difference |
-          | ------ | ----------------------------------- | ------ | ---------- |"
 
           echo "Creating backend comment"
           generate_comment backend

@@ -200,7 +200,9 @@ jobs:
           MAIN_FRONTEND_COVERAGE=("${{ steps.main-frontend.outputs.coverage }}")
           MAIN_BACKEND_COVERAGE=("${{ steps.main-backend.outputs.coverage }}")
 
-          COMMENT="code coverage report for PR #$PR_NUMBER\n| Plugin |          Main                       |   PR   | Difference |\n| ------ | ----------------------------------- | ------ | ---------- |\n"
+          COMMENT="code coverage report for PR #$PR_NUMBER\n
+          | Plugin |          Main                       |   PR   | Difference |\n
+          | ------ | ----------------------------------- | ------ | ---------- |\n"
 
           generate_comment() {
             if [ "$1" == "frontend" ]; then
@@ -227,13 +229,17 @@ jobs:
           echo "Creating frontend comment"
           generate_comment frontend
           COMMENT="Frontend $COMMENT"
+          echo $COMMENT
           echo "::set-output name=frontend-comment::$COMMENT"
 
-          COMMENT="code coverage report for PR #$PR_NUMBER\n| Plugin |          Main                       |   PR   | Difference |\n| ------ | ----------------------------------- | ------ | ---------- |\n"
+          COMMENT="code coverage report for PR #$PR_NUMBER\n
+          | Plugin |          Main                       |   PR   | Difference |\n
+          | ------ | ----------------------------------- | ------ | ---------- |\n"
 
           echo "Creating backend comment"
           generate_comment backend
           COMMENT="Backend $COMMENT"
+          echo $COMMENT
           echo "::set-output name=backend-comment::$COMMENT"
 
       - name: Find previous backend comment, if any

@@ -63,7 +63,11 @@ jobs:
                   RESULT=$($FULL_CMD)
                   $(${HTML_CMD[*]})
                   ## Retrieve coverage from result
-                  PLUGIN_COVERAGE="$PLUGIN_COVERAGE$PLUGIN | $(echo $RESULT | cut -d ':' -f 2 | grep -Eo '[0-9]+\.[0-9]+') + "
+                  if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$PLUGIN | $(echo $RESULT | cut -d ':' -f 2 | grep -Eo '[0-9]+\.[0-9]+') + "
+                  else
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$PLUGIN | $(echo $RESULT | cut -d ':' -f 2 | grep -Eo '[0-9]+\.[0-9]+') "                  
+                  fi
               done
               echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"
           fi
@@ -101,7 +105,11 @@ jobs:
               for i in "${!PATHS[@]}"; do
                   read -a splitpath <<<${PATHS[i]}
                   ## Retrive line coverage from result
-                  PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[-1]} | head -1 | cut -d '|' -f 1,5) + "
+                  if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[-1]} | head -1 | cut -d '|' -f 1,5) + "
+                  else
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[-1]} | head -1 | cut -d '|' -f 1,5)"
+                  fi
               done
               echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"
           fi
@@ -137,7 +145,11 @@ jobs:
                   RESULT=$($FULL_CMD)
                   $(${HTML_CMD[*]})
                   ## Retrieve coverage from result
-                  PLUGIN_COVERAGE="$PLUGIN_COVERAGE$PLUGIN | $(echo $RESULT | cut -d ':' -f 2 | grep -Eo '[0-9]+\.[0-9]+') + "
+                  if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$PLUGIN | $(echo $RESULT | cut -d ':' -f 2 | grep -Eo '[0-9]+\.[0-9]+') + "
+                  else
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$PLUGIN | $(echo $RESULT | cut -d ':' -f 2 | grep -Eo '[0-9]+\.[0-9]+') "                  
+                  fi              
               done
               echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"
           fi
@@ -206,7 +218,8 @@ jobs:
 
           COMMENT="code coverage report for PR #$PR_NUMBER
           | Plugin |          Main                       |   PR   | Difference |
-          | ------ | ----------------------------------- | ------ | ---------- |"
+          | ------ | ----------------------------------- | ------ | ---------- |
+          "
 
           generate_comment() {
             if [ "$1" == "frontend" ]; then
@@ -223,14 +236,14 @@ jobs:
                 PLUGIN=$(echo $CURR_PR_LINE | cut -d '|' -f 1 | xargs)
                 PR_COV=$(echo $CURR_PR_LINE | cut -d '|' -f 2 | xargs)
                 MAIN_COV=$(echo $CURR_MAIN_LINE | cut -d '|' -f 2 | xargs)
-                COMMENT="$COMMENT
-                |  $PLUGIN |   $MAIN_COV%  |   $PR_COV%    |   $(bc <<<"$PR_COV - $MAIN_COV")% |"
+                COMMENT="$COMMENT|  $PLUGIN |   $MAIN_COV%  |   $PR_COV%    |   $(bc <<<"$PR_COV - $MAIN_COV")% |
+                "
             done
 
             if [ ${#PR_ARRAY[@]} -eq 0 ]; then
               COMMENT=" - no changes"
             fi
-            
+
             COMMENT="${COMMENT//'%'/'%25'}"
             COMMENT="${COMMENT//$'\n'/'%0A'}"
             COMMENT="${COMMENT//$'\r'/'%0D'}"

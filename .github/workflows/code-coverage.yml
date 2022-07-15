@@ -58,12 +58,9 @@ jobs:
                   PLUGIN=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
                   echo "Running backend coverage check for: $PLUGIN"
                   FULL_CMD="${CMD[*]} backend_coverage/$PLUGIN.cov ./${PATHS[i]}"
-                  echo $FULL_CMD
                   ## This command generates the HTML report
                   HTML_CMD=('go' 'tool' 'cover' "-html=backend_coverage/$PLUGIN.cov" "-o backend_coverage/$PLUGIN.html")
-                  echo $(HTML_CMD[*])
                   RESULT=$($FULL_CMD)
-                  echo $RESULT
                   $(${HTML_CMD[*]})
                   ## Retrieve coverage from result
                   if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
@@ -71,7 +68,6 @@ jobs:
                   else
                       PLUGIN_COVERAGE="$PLUGIN_COVERAGE$PLUGIN | $(echo $RESULT | cut -d ':' -f 2 | grep -Eo '[0-9]+\.[0-9]+') "                  
                   fi
-                  echo $PLUGIN_COVERAGE
               done
               echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"
           fi
@@ -101,18 +97,26 @@ jobs:
                   TEST_PATHS+=("--testPathPattern=\"${PATHS[i]}/*\"")
               done
               FULL_CMD="${CMD[*]}'[$COVERAGE_PATHS]' ${TEST_PATHS[*]}"
-              RESULT=$(yarn exec $FULL_CMD)
+              if [[ ${PATHS[0]} == 'src' ]]; then
+                  RESULT=$($FULL_CMD)
+              else
+                  RESULT=$(yarn exec $FULL_CMD)
+              fi
 
               PLUGIN_COVERAGE=""
               ## Set field delimiter so that we can easily split the path
               IFS='/'
               for i in "${!PATHS[@]}"; do
                   read -a splitpath <<<${PATHS[i]}
+                  FINAL_ELEMENT=-1
+                  if [[ ${#PATHS[@]} -eq 1 ]]; then
+                      FINAL_ELEMENT=0
+                  fi
                   ## Retrive line coverage from result
                   if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[-1]} | head -1 | cut -d '|' -f 1,5) + "
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[$FINAL_ELEMENT]} | head -1 | cut -d '|' -f 1,5) + "
                   else
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[-1]} | head -1 | cut -d '|' -f 1,5)"
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[$FINAL_ELEMENT]} | head -1 | cut -d '|' -f 1,5)"
                   fi
               done
               echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"
@@ -182,18 +186,26 @@ jobs:
                   TEST_PATHS+=("--testPathPattern=\"${PATHS[i]}/*\"")
               done
               FULL_CMD="${CMD[*]}'[$COVERAGE_PATHS]' ${TEST_PATHS[*]}"
-              RESULT=$(yarn exec $FULL_CMD)
+              if [[ ${PATHS[0]} == 'src' ]]; then
+                  RESULT=$($FULL_CMD)
+              else
+                  RESULT=$(yarn exec $FULL_CMD)
+              fi
 
               PLUGIN_COVERAGE=""
               ## Set field delimiter so that we can easily split the path
               IFS='/'
               for i in "${!PATHS[@]}"; do
                   read -a splitpath <<<${PATHS[i]}
+                  FINAL_ELEMENT=-1
+                  if [[ ${#PATHS[@]} -eq 1 ]]; then
+                      FINAL_ELEMENT=0
+                  fi
                   ## Retrive line coverage from result
                   if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[-1]} | head -1 | cut -d '|' -f 1,5) + "
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[$FINAL_ELEMENT]} | head -1 | cut -d '|' -f 1,5) + "
                   else
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[-1]} | head -1 | cut -d '|' -f 1,5)"
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[$FINAL_ELEMENT]} | head -1 | cut -d '|' -f 1,5)"
                   fi
               done
               echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"

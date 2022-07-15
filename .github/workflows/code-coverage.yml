@@ -98,7 +98,7 @@ jobs:
               done
               FULL_CMD="${CMD[*]}'[$COVERAGE_PATHS]' ${TEST_PATHS[*]}"
               if [[ ${PATHS[0]} == 'src' ]]; then
-                  RESULT=$($FULL_CMD)
+                  RESULT=$(yarn run $FULL_CMD)
               else
                   RESULT=$(yarn exec $FULL_CMD)
               fi
@@ -187,7 +187,7 @@ jobs:
               done
               FULL_CMD="${CMD[*]}'[$COVERAGE_PATHS]' ${TEST_PATHS[*]}"
               if [[ ${PATHS[0]} == 'src' ]]; then
-                  RESULT=$($FULL_CMD)
+                  RESULT=$(yarn run $FULL_CMD)
               else
                   RESULT=$(yarn exec $FULL_CMD)
               fi

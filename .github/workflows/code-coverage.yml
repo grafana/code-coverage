@@ -58,9 +58,12 @@ jobs:
                   PLUGIN=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
                   echo "Running backend coverage check for: $PLUGIN"
                   FULL_CMD="${CMD[*]} backend_coverage/$PLUGIN.cov ./${PATHS[i]}"
+                  echo $FULL_CMD
                   ## This command generates the HTML report
                   HTML_CMD=('go' 'tool' 'cover' "-html=backend_coverage/$PLUGIN.cov" "-o backend_coverage/$PLUGIN.html")
+                  echo $(HTML_CMD[*])
                   RESULT=$($FULL_CMD)
+                  echo $RESULT
                   $(${HTML_CMD[*]})
                   ## Retrieve coverage from result
                   if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
@@ -68,6 +71,7 @@ jobs:
                   else
                       PLUGIN_COVERAGE="$PLUGIN_COVERAGE$PLUGIN | $(echo $RESULT | cut -d ':' -f 2 | grep -Eo '[0-9]+\.[0-9]+') "                  
                   fi
+                  echo $PLUGIN_COVERAGE
               done
               echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"
           fi

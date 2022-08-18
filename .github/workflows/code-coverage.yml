@@ -50,16 +50,16 @@ jobs:
               exit 0
           else
               ## Create directory for backend coverage output
-              mkdir backend_coverage
+              mkdir backend_coverage_pr
               CMD=('go' 'test' '-coverprofile')
               PLUGIN_COVERAGE=""
               for i in "${!PATHS[@]}"; do
                   ## Identify plugin
                   PLUGIN=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
                   echo "Running backend coverage check for: $PLUGIN"
-                  FULL_CMD="${CMD[*]} backend_coverage/$PLUGIN.cov ./${PATHS[i]}"
+                  FULL_CMD="${CMD[*]} backend_coverage_pr/$PLUGIN.cov ./${PATHS[i]}"
                   ## This command generates the HTML report
-                  HTML_CMD=('go' 'tool' 'cover' "-html=backend_coverage/$PLUGIN.cov" "-o backend_coverage/$PLUGIN.html")
+                  HTML_CMD=('go' 'tool' 'cover' "-html=backend_coverage_pr/$PLUGIN.cov" "-o backend_coverage_pr/$PLUGIN.html")
                   RESULT=$($FULL_CMD)
                   $(${HTML_CMD[*]})
                   ## Retrieve coverage from result
@@ -83,7 +83,7 @@ jobs:
               ## Coverage paths are slightly differently formatted compared to test paths
               COVERAGE_PATHS=""
               declare -a TEST_PATHS=()
-              CMD=('jest' '--coverage' '--collectCoverageFrom=')
+              CMD=('jest' '--coverage' '--coverageDirectory="frontend_coverage_pr"' '--collectCoverageFrom=')
               for i in "${!PATHS[@]}"; do
                   ## Identify which plugin path has been passed in
                   PLUGIN=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
@@ -98,7 +98,7 @@ jobs:
               done
               FULL_CMD="${CMD[*]}'[$COVERAGE_PATHS]' ${TEST_PATHS[*]}"
               if [[ ${PATHS[0]} == 'src' ]]; then
-                  RESULT=$(yarn test:coverage)
+                  RESULT=$(yarn test:coverage --coverageDirectory="frontend_coverage_pr")
               else
                   RESULT=$(yarn exec $FULL_CMD)
               fi
@@ -140,16 +140,16 @@ jobs:
               exit 0
           else
               ## Create directory for backend coverage output
-              mkdir backend_coverage
+              mkdir backend_coverage_main
               CMD=('go' 'test' '-coverprofile')
               PLUGIN_COVERAGE=""
               for i in "${!PATHS[@]}"; do
                   ## Identify plugin
                   PLUGIN=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
                   echo "Running backend coverage check for: $PLUGIN"
-                  FULL_CMD="${CMD[*]} backend_coverage/$PLUGIN.cov ./${PATHS[i]}"
+                  FULL_CMD="${CMD[*]} backend_coverage_main/$PLUGIN.cov ./${PATHS[i]}"
                   ## This command generates the HTML report
-                  HTML_CMD=('go' 'tool' 'cover' "-html=backend_coverage/$PLUGIN.cov" "-o backend_coverage/$PLUGIN.html")
+                  HTML_CMD=('go' 'tool' 'cover' "-html=backend_coverage_main/$PLUGIN.cov" "-o backend_coverage_main/$PLUGIN.html")
                   RESULT=$($FULL_CMD)
                   $(${HTML_CMD[*]})
                   ## Retrieve coverage from result
@@ -172,7 +172,7 @@ jobs:
               ## Coverage paths are slightly differently formatted compared to test paths
               COVERAGE_PATHS=""
               declare -a TEST_PATHS=()
-              CMD=('jest' '--coverage' '--collectCoverageFrom=')
+              CMD=('jest' '--coverage' '--coverageDirectory="frontend_coverage_main"' '--collectCoverageFrom=')
               for i in "${!PATHS[@]}"; do
                   ## Identify which plugin path has been passed in
                   PLUGIN=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
@@ -187,7 +187,7 @@ jobs:
               done
               FULL_CMD="${CMD[*]}'[$COVERAGE_PATHS]' ${TEST_PATHS[*]}"
               if [[ ${PATHS[0]} == 'src' ]]; then
-                  RESULT=$(yarn test:coverage)
+                  RESULT=$(yarn test:coverage --coverageDirectory="frontend_coverage_main")
               else
                   RESULT=$(yarn exec $FULL_CMD)
               fi
@@ -215,12 +215,16 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: backend-code-coverage-report
-          path: backend_coverage
+          path: |
+            backend_coverage_main
+            backend_coverage_pr
       - name: Archive frontend code coverage results
         uses: actions/upload-artifact@v3
         with:
           name: frontend-code-coverage-report
-          path: coverage/lcov-report
+          path: |
+            frontend_coverage_main/lcov-report
+            frontend_coverage_pr/lcov-report
 
       - name: Create comments
         id: comments

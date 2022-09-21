@@ -104,19 +104,19 @@ jobs:
               fi
 
               PLUGIN_COVERAGE=""
-              ## Set field delimiter so that we can easily split the path
-              IFS='/'
+              ## Store original field delimiter value
+              BACKUP_IFS=$IFS
               for i in "${!PATHS[@]}"; do
-                  read -a splitpath <<<${PATHS[i]}
-                  FINAL_ELEMENT=-1
-                  if [[ ${#PATHS[@]} -eq 1 ]]; then
-                      FINAL_ELEMENT=0
-                  fi
+                  ## Reset field delimiter
+                  IFS=$BACKUP_IFS
+                  keyword=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
+                  ## Set field delimiter so that we can easily grep the correct path in coverage result
+                  IFS='/'
                   ## Retrive line coverage from result
                   if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[$FINAL_ELEMENT]} | head -1 | cut -d '|' -f 1,5) + "
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep $keyword | head -1 | cut -d '|' -f 1,5) + "
                   else
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[$FINAL_ELEMENT]} | head -1 | cut -d '|' -f 1,5)"
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep $keyword | head -1 | cut -d '|' -f 1,5)"
                   fi
               done
               echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"
@@ -193,19 +193,19 @@ jobs:
               fi
 
               PLUGIN_COVERAGE=""
-              ## Set field delimiter so that we can easily split the path
-              IFS='/'
+              ## Store original field delimiter value
+              BACKUP_IFS=$IFS
               for i in "${!PATHS[@]}"; do
-                  read -a splitpath <<<${PATHS[i]}
-                  FINAL_ELEMENT=-1
-                  if [[ ${#PATHS[@]} -eq 1 ]]; then
-                      FINAL_ELEMENT=0
-                  fi
+                  ## Reset field delimiter
+                  IFS=$BACKUP_IFS
+                  keyword=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
+                  ## Set field delimiter so that we can easily grep the correct path in coverage result
+                  IFS='/'
                   ## Retrive line coverage from result
                   if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[$FINAL_ELEMENT]} | head -1 | cut -d '|' -f 1,5) + "
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep $keyword | head -1 | cut -d '|' -f 1,5) + "
                   else
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep ${splitpath[$FINAL_ELEMENT]} | head -1 | cut -d '|' -f 1,5)"
+                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep $keyword | head -1 | cut -d '|' -f 1,5)"
                   fi
               done
               echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"

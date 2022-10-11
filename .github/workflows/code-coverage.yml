@@ -36,7 +36,7 @@ jobs:
         run: yarn install
       - uses: actions/setup-go@v2
         with:
-          go-version: "1.17.8"
+          go-version: "1.18.7"
       - name: generate go for github.com/grafana/grafana
         if: github.repository == 'grafana/grafana'
         run: make gen-go

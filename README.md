@@ -4,7 +4,7 @@
 #### TypeScript
 * yarn
 * package.json must contain a script `yarn test:coverage` which generates a report in `"jest --coverage"` style
-* runs in node 17.x environment
+* runs in node 16.x environment
 
 ## Description
 

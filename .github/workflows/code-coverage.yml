@@ -81,45 +81,33 @@ jobs:
               exit 0
           else
               ## Coverage paths are slightly differently formatted compared to test paths
-              COVERAGE_PATHS=""
-              declare -a TEST_PATHS=()
+              COVERAGE_RESULTS=''
               CMD=('jest' '--coverage' '--coverageDirectory="frontend_coverage_pr"' '--collectCoverageFrom=')
+              BACKUP_IFS=$IFS
               for i in "${!PATHS[@]}"; do
+                  IFS=$BACKUP_IFS
                   ## Identify which plugin path has been passed in
                   PLUGIN=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
                   echo "Running frontend coverage check for: $PLUGIN"
-                  ## If this is the last element do not append a comma
-                  if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
-                      COVERAGE_PATHS="$COVERAGE_PATHS\"${PATHS[i]}/**\","
+                  COVERAGE_PATH="$COVERAGE_PATHS\"${PATHS[i]}/**\""
+                  TEST_PATH=("--testPathPattern=\"${PATHS[i]}/*\"")
+                  FULL_CMD="${CMD[*]}'[$COVERAGE_PATH]' ${TEST_PATH[*]}"
+                  if [[ ${PATHS[i]} == 'src' ]]; then
+                      RESULT=$(yarn test:coverage --coverageDirectory="frontend_coverage_pr")
                   else
-                      COVERAGE_PATHS="$COVERAGE_PATHS\"${PATHS[i]}/**\""
+                      RESULT=$(yarn exec $FULL_CMD)
                   fi
-                  TEST_PATHS+=("--testPathPattern=\"${PATHS[i]}/*\"")
-              done
-              FULL_CMD="${CMD[*]}'[$COVERAGE_PATHS]' ${TEST_PATHS[*]}"
-              if [[ ${PATHS[0]} == 'src' ]]; then
-                  RESULT=$(yarn test:coverage --coverageDirectory="frontend_coverage_pr")
-              else
-                  RESULT=$(yarn exec $FULL_CMD)
-              fi
-
-              PLUGIN_COVERAGE=""
-              ## Store original field delimiter value
-              BACKUP_IFS=$IFS
-              for i in "${!PATHS[@]}"; do
-                  ## Reset field delimiter
-                  IFS=$BACKUP_IFS
-                  keyword=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
-                  ## Set field delimiter so that we can easily grep the correct path in coverage result
                   IFS='/'
-                  ## Retrive line coverage from result
                   if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep $keyword | head -1 | cut -d '|' -f 1,5) + "
+                      COVERAGE_RESULT="$(echo $RESULT | grep 'All files' | head -1 | cut -d '|' -f 5)"
+                      COVERAGE_RESULTS="$COVERAGE_RESULTS $PLUGIN | $COVERAGE_RESULT + "
                   else
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep $keyword | head -1 | cut -d '|' -f 1,5)"
+                      COVERAGE_RESULT="$(echo $RESULT | grep 'All files' | head -1 | cut -d '|' -f 5)"
+                      COVERAGE_RESULTS="$COVERAGE_RESULTS $PLUGIN | $COVERAGE_RESULT "
                   fi
               done
-              echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"
+
+              echo "::set-output name=coverage::$(echo -e $COVERAGE_RESULTS)"
           fi
 
       - uses: actions/checkout@v3
@@ -170,45 +158,33 @@ jobs:
               exit 0
           else
               ## Coverage paths are slightly differently formatted compared to test paths
-              COVERAGE_PATHS=""
-              declare -a TEST_PATHS=()
-              CMD=('jest' '--coverage' '--coverageDirectory="frontend_coverage_main"' '--collectCoverageFrom=')
+              COVERAGE_RESULTS=''
+              CMD=('jest' '--coverage' '--coverageDirectory="frontend_coverage_pr"' '--collectCoverageFrom=')
+              BACKUP_IFS=$IFS
               for i in "${!PATHS[@]}"; do
+                  IFS=$BACKUP_IFS
                   ## Identify which plugin path has been passed in
                   PLUGIN=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
                   echo "Running frontend coverage check for: $PLUGIN"
-                  ## If this is the last element do not append a comma
-                  if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
-                      COVERAGE_PATHS="$COVERAGE_PATHS\"${PATHS[i]}/**\","
+                  COVERAGE_PATH="$COVERAGE_PATHS\"${PATHS[i]}/**\""
+                  TEST_PATH=("--testPathPattern=\"${PATHS[i]}/*\"")
+                  FULL_CMD="${CMD[*]}'[$COVERAGE_PATH]' ${TEST_PATH[*]}"
+                  if [[ ${PATHS[i]} == 'src' ]]; then
+                      RESULT=$(yarn test:coverage --coverageDirectory="frontend_coverage_pr")
                   else
-                      COVERAGE_PATHS="$COVERAGE_PATHS\"${PATHS[i]}/**\""
+                      RESULT=$(yarn exec $FULL_CMD)
                   fi
-                  TEST_PATHS+=("--testPathPattern=\"${PATHS[i]}/*\"")
-              done
-              FULL_CMD="${CMD[*]}'[$COVERAGE_PATHS]' ${TEST_PATHS[*]}"
-              if [[ ${PATHS[0]} == 'src' ]]; then
-                  RESULT=$(yarn test:coverage --coverageDirectory="frontend_coverage_main")
-              else
-                  RESULT=$(yarn exec $FULL_CMD)
-              fi
-
-              PLUGIN_COVERAGE=""
-              ## Store original field delimiter value
-              BACKUP_IFS=$IFS
-              for i in "${!PATHS[@]}"; do
-                  ## Reset field delimiter
-                  IFS=$BACKUP_IFS
-                  keyword=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
-                  ## Set field delimiter so that we can easily grep the correct path in coverage result
                   IFS='/'
-                  ## Retrive line coverage from result
                   if [ $i -lt $((${#PATHS[@]} - 1)) ]; then
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep $keyword | head -1 | cut -d '|' -f 1,5) + "
+                      COVERAGE_RESULT="$(echo $RESULT | grep 'All files' | head -1 | cut -d '|' -f 5)"
+                      COVERAGE_RESULTS="$COVERAGE_RESULTS $PLUGIN | $COVERAGE_RESULT + "
                   else
-                      PLUGIN_COVERAGE="$PLUGIN_COVERAGE$(echo $RESULT | grep $keyword | head -1 | cut -d '|' -f 1,5)"
+                      COVERAGE_RESULT="$(echo $RESULT | grep 'All files' | head -1 | cut -d '|' -f 5)"
+                      COVERAGE_RESULTS="$COVERAGE_RESULTS $PLUGIN | $COVERAGE_RESULT "
                   fi
               done
-              echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"
+
+              echo "::set-output name=coverage::$(echo -e $COVERAGE_RESULTS)"
           fi
 
       - name: Archive backend code coverage results

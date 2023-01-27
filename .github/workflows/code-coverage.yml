@@ -40,6 +40,7 @@ jobs:
               exit 0
           else
             yarn install
+          fi
 
       - uses: actions/setup-go@v2
         with:
@@ -53,6 +54,7 @@ jobs:
               exit 0
           else
             make gen-go
+          fi
 
       - name: Get go coverage for caller's PR
         id: pr-backend
@@ -135,6 +137,7 @@ jobs:
               exit 0
           else
             yarn install
+          fi
 
       - name: generate go for github.com/grafana/grafana
         if: github.repository == 'grafana/grafana'
@@ -145,6 +148,7 @@ jobs:
               exit 0
           else
             make gen-go
+          fi
 
       - name: Get go coverage on caller's main
         id: main-backend

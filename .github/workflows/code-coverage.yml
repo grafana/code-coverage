@@ -33,13 +33,13 @@ jobs:
           node-version: 16.x
           cache: yarn
       - name: yarn install for caller's PR
-        run: | 
-        PATHS=(${{ steps.relevant-paths.outputs.frontend-paths }})
-        if [ -z "$PATHS" ]; then
-            echo "No frontend paths to check"
-            exit 0
-        else
-          yarn install
+        run: |
+          PATHS=(${{ steps.relevant-paths.outputs.frontend-paths }})
+          if [ -z "$PATHS" ]; then
+              echo "No frontend paths to check"
+              exit 0
+          else
+            yarn install
 
       - uses: actions/setup-go@v2
         with:
@@ -47,12 +47,12 @@ jobs:
       - name: generate go for github.com/grafana/grafana
         if: github.repository == 'grafana/grafana'
         run: |
-        PATHS=(${{ steps.relevant-paths.outputs.backend-paths }})
-        if [ -z "$PATHS" ]; then
-            echo "No backend paths to check"
-            exit 0
-        else
-          make gen-go
+          PATHS=(${{ steps.relevant-paths.outputs.backend-paths }})
+          if [ -z "$PATHS" ]; then
+              echo "No backend paths to check"
+              exit 0
+          else
+            make gen-go
 
       - name: Get go coverage for caller's PR
         id: pr-backend
@@ -129,22 +129,22 @@ jobs:
 
       - name: yarn install for caller's main
         run: |
-        PATHS=(${{ steps.relevant-paths.outputs.frontend-paths }})
-        if [ -z "$PATHS" ]; then
-            echo "No frontend paths to check"
-            exit 0
-        else
-          yarn install
+          PATHS=(${{ steps.relevant-paths.outputs.frontend-paths }})
+          if [ -z "$PATHS" ]; then
+              echo "No frontend paths to check"
+              exit 0
+          else
+            yarn install
 
       - name: generate go for github.com/grafana/grafana
         if: github.repository == 'grafana/grafana'
         run: |
-        PATHS=(${{ steps.relevant-paths.outputs.backend-paths }})
-        if [ -z "$PATHS" ]; then
-            echo "No backend paths to check"
-            exit 0
-        else
-          make gen-go
+          PATHS=(${{ steps.relevant-paths.outputs.backend-paths }})
+          if [ -z "$PATHS" ]; then
+              echo "No backend paths to check"
+              exit 0
+          else
+            make gen-go
 
       - name: Get go coverage on caller's main
         id: main-backend
@@ -176,7 +176,7 @@ jobs:
               done
               echo "::set-output name=coverage::$(echo -e $PLUGIN_COVERAGE)"
           fi
-      
+
       - name: Get TypeScript coverage on caller's main
         id: main-frontend
         run: |
@@ -222,7 +222,7 @@ jobs:
           path: |
             backend_coverage_main
             backend_coverage_pr
-     
+
       - name: Archive frontend code coverage results
         uses: actions/upload-artifact@v3
         with:
@@ -298,7 +298,7 @@ jobs:
           comment-author: "github-actions[bot]"
           body-includes: |
             Backend code coverage report for PR #${{ github.event.pull_request.number }}
-     
+
       - name: Find previous frontend comment, if any
         uses: peter-evans/find-comment@v2
         id: find-frontend-comment
@@ -317,7 +317,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.comments.outputs.backend-comment }}
           edit-mode: replace
-      
+
       - name: Create or update frontend comment
         uses: peter-evans/create-or-update-comment@v2
         # Check if the event is not triggered by a fork

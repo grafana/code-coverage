@@ -104,7 +104,7 @@ jobs:
                   ## Identify which plugin path has been passed in
                   PLUGIN=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
                   echo "Running frontend coverage check for: $PLUGIN"
-                  COVERAGE_PATH="$COVERAGE_PATHS\"${PATHS[i]}/**\""
+                  COVERAGE_PATH="$COVERAGE_PATHS\"${PATHS[i]}/**/*.(ts|tsx)\""
                   TEST_PATH=("--testPathPattern=\"${PATHS[i]}/*\"")
                   FULL_CMD="${CMD[*]}'[$COVERAGE_PATH]' ${TEST_PATH[*]}"
                   if [[ ${PATHS[i]} == 'src' ]]; then
@@ -198,7 +198,7 @@ jobs:
                   ## Identify which plugin path has been passed in
                   PLUGIN=$(echo ${PATHS[i]} | awk -F '/' '{ print $NF }')
                   echo "Running frontend coverage check for: $PLUGIN"
-                  COVERAGE_PATH="$COVERAGE_PATHS\"${PATHS[i]}/**\""
+                  COVERAGE_PATH="$COVERAGE_PATHS\"${PATHS[i]}/**/*.(ts|tsx)\""
                   TEST_PATH=("--testPathPattern=\"${PATHS[i]}/*\"")
                   FULL_CMD="${CMD[*]}'[$COVERAGE_PATH]' ${TEST_PATH[*]}"
                   if [[ ${PATHS[i]} == 'src' ]]; then

@@ -108,7 +108,7 @@ jobs:
                   TEST_PATH=("--testPathPattern=\"${PATHS[i]}/*\"")
                   FULL_CMD="${CMD[*]}'[$COVERAGE_PATH]' ${TEST_PATH[*]}"
                   if [[ ${PATHS[i]} == 'src' ]]; then
-                      RESULT=$(yarn test:coverage --coverageDirectory="frontend_coverage_pr")
+                      RESULT=$(yarn test:coverage --coverageDirectory="frontend_coverage_pr" --collectCoverageFrom='["src/**/*.{ts,tsx}"]')
                   else
                       RESULT=$(yarn exec $FULL_CMD)
                   fi
@@ -202,7 +202,7 @@ jobs:
                   TEST_PATH=("--testPathPattern=\"${PATHS[i]}/*\"")
                   FULL_CMD="${CMD[*]}'[$COVERAGE_PATH]' ${TEST_PATH[*]}"
                   if [[ ${PATHS[i]} == 'src' ]]; then
-                      RESULT=$(yarn test:coverage --coverageDirectory="frontend_coverage_pr")
+                      RESULT=$(yarn test:coverage --coverageDirectory="frontend_coverage_pr" --collectCoverageFrom='["src/**/*.{ts,tsx}"]')
                   else
                       RESULT=$(yarn exec $FULL_CMD)
                   fi

@@ -44,7 +44,7 @@ jobs:
 
       - uses: actions/setup-go@v2
         with:
-          go-version: "1.19"
+          go-version: "1.20.x"
       - name: generate go for github.com/grafana/grafana
         if: github.repository == 'grafana/grafana'
         run: |

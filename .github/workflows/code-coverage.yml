@@ -30,7 +30,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.x
+          node-version: 20.x
           cache: yarn
       - name: yarn install for caller's PR
         run: |
